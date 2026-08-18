@@ -36,7 +36,7 @@
     <h1>XTUBE33</h1>
     <div class="video-card">
         <div class="video-wrapper" id="player-container">
-            <!-- প্রথম ভিডিওটি ডিফল্ট হিসেবে লোড হবে -->
+            <!-- প্রথম ভিডিও ডিফল্ট হিসেবে লোড হবে -->
             <iframe id="main-iframe" src="https://www.eporner.com/embed/obffjpOrXCf/?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
             <div class="overlay" id="main-overlay">
                 <button class="btn-continue" onclick="resumeVideo()">Continue Watch</button>
@@ -56,7 +56,7 @@
 </div>
 
 <script>
-    // আপনার দেওয়া ইপোর্নার ভিডিওগুলোর আইডি দিয়ে তালিকা তৈরি করা হলো
+    // ইপোর্নার ভিডিওগুলোর তালিকা
     const videos = [
         {id: 'obffjpOrXCf', desc: 'High definition professional video content part one.'},
         {id: 'FaZ196XxZwb', desc: 'Amazing scenes and clear quality entertainment.'},
@@ -89,14 +89,18 @@
 
     function resumeVideo() {
         overlay.classList.remove('active');
-        window.open('https://progressmagnify.com/uxbc0jzq?key=7389f3aaab27e89319b6c474fc4bf2e0', '_blank');
         
-        // ব্যাক করে আসার পর বা বাটন ক্লিক করার পর ভিডিও রি-প্লে ট্রিগার করতে সোর্স রিফ্রেশ করা হলো
-        let currentSrc = mainIframe.src;
-        mainIframe.src = '';
-        setTimeout(() => {
-            mainIframe.src = currentSrc;
-        }, 100);
+        // নিরাপদভাবে নতুন ট্যাবে এড ওপেন করার কোড
+        var win = window.open('https://progressmagnify.com/uxbc0jzq?key=7389f3aaab27e89319b6c474fc4bf2e0', '_blank');
+        if (win) {
+            win.focus();
+        }
+
+        // টাইমআউট এরর এড়াতে আইফ্রেমের স্টেট ঠিক রাখা
+        let currentUrl = mainIframe.src;
+        if(!currentUrl.includes('autoplay=1')) {
+            mainIframe.src = currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'autoplay=1';
+        }
     }
 
     // ব্রাউজার হিস্ট্রি বা ব্যাক বাটন হ্যান্ডেল করার জন্য
@@ -104,7 +108,9 @@
         if (event.persisted) {
             let currentSrc = mainIframe.src;
             mainIframe.src = '';
-            mainIframe.src = currentSrc;
+            setTimeout(() => {
+                mainIframe.src = currentSrc;
+            }, 100);
         }
     });
 
@@ -112,7 +118,6 @@
     videos.forEach(v => {
         const div = document.createElement('div');
         div.className = 'item';
-        // ইপোর্নারের থাম্বনেইল লিংক স্ট্রাকচার ব্যবহার করা হয়েছে
         div.innerHTML = `<div class="thumb"><img src="https://static-eu-cdn.eporner.com/thumbs/static/${v.id}/337.jpg" onerror="this.src='https://via.placeholder.com/120x70/222/fff?text=Video'"></div><div style="color:#ccc; font-size:14px;">${v.desc}</div>`;
         div.onclick = () => { 
             mainIframe.src = `https://www.eporner.com/embed/${v.id}/?autoplay=1`;
