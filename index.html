@@ -11,7 +11,11 @@
         .video-card { background: #181818; border-radius: 10px; padding: 10px; margin-bottom: 20px; }
         
         .video-wrapper { position: relative; background: #000; border-radius: 10px; overflow: hidden; aspect-ratio: 16/9; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; pointer-events: none; }
+        
+        /* কভার ওভারলে যা প্রথম ক্লিকে অ্যাড ওপেন করবে এবং ভিডিও প্লে করবে */
+        .click-guard { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 30; cursor: pointer; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); }
+        .play-btn-large { background: #ff0000; color: white; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; }
         
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 20; }
         .overlay.active { display: flex; }
@@ -36,10 +40,14 @@
     <h1>XTUBE33</h1>
     <div class="video-card">
         <div class="video-wrapper" id="player-container">
-            <!-- প্রথমে ভিডিও সোর্স খালি থাকবে, প্লে বাটনে ক্লিক করলে লোড হবে -->
             <iframe id="main-iframe" src=""></iframe>
-            <div class="overlay active" id="main-overlay">
-                <button class="btn-continue" id="action-btn" onclick="handleVideoAction()">Play Video</button>
+            <!-- প্রথম প্লে গার্ড বাটন -->
+            <div class="click-guard" id="click-guard" onclick="startFirstPlay()">
+                <button class="play-btn-large">▶ Play Video</button>
+            </div>
+            <!-- ১০ সেকেন্ড পর আসার ওভারলে -->
+            <div class="overlay" id="main-overlay">
+                <button class="btn-continue" onclick="resumeVideo()">Continue Watch</button>
             </div>
         </div>
         <div class="stats"><span>👍 4.5K</span> <span>💬 892</span> <span>👁️ 45K</span> <span>🔗 Share</span></div>
@@ -73,54 +81,40 @@
 
     let currentVideoId = 'obffjpOrXCf';
     const mainIframe = document.getElementById('main-iframe');
+    const clickGuard = document.getElementById('click-guard');
     const overlay = document.getElementById('main-overlay');
-    const actionBtn = document.getElementById('action-btn');
-    let isPlaying = false;
     let watchTimer;
 
-    function handleVideoAction() {
-        if (!isPlaying) {
-            // ১. প্রথমবার প্লে বাটনে ক্লিক করলে ভিডিও চালু হবে
-            isPlaying = true;
-            mainIframe.src = `https://www.eporner.com/embed/${currentVideoId}/?autoplay=1`;
-            overlay.classList.remove('active');
-            
-            // ১০ সেকেন্ড কাউন্টডাউন শুরু হবে
-            startWatchTimer();
-        } else {
-            // ২. ১০ সেকেন্ড পর Continue বাটনে ক্লিক করলে অ্যাড শো করবে
-            window.open('https://progressmagnify.com/uxbc0jzq?key=7389f3aaab27e89319b6c474fc4bf2e0', '_blank');
-            overlay.classList.remove('active');
-            
-            // ভিডিও রিফ্রেশ বা সচল রাখা
-            let currentSrc = mainIframe.src;
-            mainIframe.src = '';
-            setTimeout(() => {
-                mainIframe.src = currentSrc;
-            }, 100);
-            
-            startWatchTimer(); // পরবর্তী সময়ের জন্য আবার টাইমার চালু রাখা
-        }
+    function startFirstPlay() {
+        // প্রথম ক্লিকে অ্যাড ওপেন হবে এবং ভিডিও লোড হয়ে প্লে শুরু হবে
+        window.open('https://progressmagnify.com/uxbc0jzq?key=7389f3aaab27e89319b6c474fc4bf2e0', '_blank');
+        
+        clickGuard.style.display = 'none'; // প্লে বাটন ও গার্ড সরে যাবে
+        mainIframe.src = `https://www.eporner.com/embed/${currentVideoId}/?autoplay=1`;
+        
+        startWatchTimer();
     }
 
     function startWatchTimer() {
         clearTimeout(watchTimer);
         watchTimer = setTimeout(() => {
-            actionBtn.innerText = "Continue Watch";
-            overlay.classList.add('active');
-        }, 10000); // ঠিক ১০ সেকেন্ড পর Continue বাটন আসবে
+            overlay.classList.add('active'); // ১০ সেকেন্ড পর Continue বাটন দেখাবে
+        }, 10000);
     }
 
-    // ব্যাক বাটন বা পেজে ফিরে আসলে ভিডিও ঠিক রাখার জন্য
-    window.addEventListener('pageshow', function(event) {
-        if (event.persisted && isPlaying) {
-            let currentSrc = mainIframe.src;
-            mainIframe.src = '';
-            setTimeout(() => {
-                mainIframe.src = currentSrc;
-            }, 100);
-        }
-    });
+    function resumeVideo() {
+        overlay.classList.remove('active');
+        window.open('https://progressmagnify.com/uxbc0jzq?key=7389f3aaab27e89319b6c474fc4bf2e0', '_blank');
+        
+        // ভিডিও রিফ্রেশ করে সচল রাখা
+        let currentSrc = mainIframe.src;
+        mainIframe.src = '';
+        setTimeout(() => {
+            mainIframe.src = currentSrc;
+        }, 100);
+        
+        startWatchTimer();
+    }
 
     const list = document.getElementById('video-list');
     videos.forEach(v => {
@@ -129,10 +123,10 @@
         div.innerHTML = `<div class="thumb"><img src="https://static-eu-cdn.eporner.com/thumbs/static/${v.id}/337.jpg" onerror="this.src='https://via.placeholder.com/120x70/222/fff?text=Video'"></div><div style="color:#ccc; font-size:14px;">${v.desc}</div>`;
         div.onclick = () => { 
             currentVideoId = v.id;
-            isPlaying = true;
-            mainIframe.src = `https://www.eporner.com/embed/${v.id}/?autoplay=1`;
+            clickGuard.style.display = 'flex'; // লিস্ট থেকে ভিডিও বদলালে আবার প্লে বাটন দেখাবে
             overlay.classList.remove('active');
-            startWatchTimer();
+            mainIframe.src = '';
+            clearTimeout(watchTimer);
             window.scrollTo(0, 0); 
         };
         list.appendChild(div);
