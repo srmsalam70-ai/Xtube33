@@ -8,51 +8,26 @@
         body { font-family: sans-serif; background: #0f0f0f; color: white; margin: 0; padding: 10px; }
         .container { max-width: 800px; margin: auto; }
         h1 { color: #ff0000; text-align: center; margin: 10px 0; }
-        .video-card { background: #181818; border-radius: 10px; padding: 10px; margin-bottom: 20px; text-align: center; }
+        .video-card { background: #181818; border-radius: 10px; padding: 10px; margin-bottom: 20px; }
         
-        .video-wrapper { position: relative; background: #111; border-radius: 10px; overflow: hidden; aspect-ratio: 16/9; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; border: 2px solid #333; }
-        .video-wrapper:hover { border-color: #ff0000; }
-        .video-wrapper img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .video-wrapper { position: relative; background: #000; border-radius: 10px; overflow: hidden; aspect-ratio: 16/9; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
         
-        /* প্রফেশনাল ও রিয়েলিস্টিক ইউটিউব স্টাইল প্লে বাটন */
-        .big-play-btn { 
-            background: rgba(28, 28, 28, 0.85); 
-            color: #ff0000; 
-            width: 80px; 
-            height: 55px; 
-            border-radius: 14px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 26px; 
-            z-index: 2; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8); 
-            transition: all 0.2s ease;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .video-wrapper:hover .big-play-btn { 
-            background: #ff0000; 
-            color: white; 
-            transform: scale(1.08); 
-        }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 20; }
+        .overlay.active { display: flex; }
+        .btn-continue { background: #ff0000; padding: 15px 30px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 16px; border-radius: 5px; }
 
-        .video-title-overlay { z-index: 2; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); width: 100%; padding: 20px 10px 10px 10px; position: absolute; bottom: 0; font-size: 16px; font-weight: bold; text-align: left; }
-
-        .stats { display: flex; justify-content: space-between; padding: 15px 0; color: #aaa; font-size: 14px; border-top: 1px solid #333; text-align: left; }
-        
-        .comment-section { color: #ddd; font-size: 14px; border-top: 1px solid #333; padding-top: 10px; text-align: left; }
+        .stats { display: flex; justify-content: space-between; padding: 15px 0; color: #aaa; font-size: 14px; border-top: 1px solid #333; }
+        .comment-section { color: #ddd; font-size: 14px; border-top: 1px solid #333; padding-top: 10px; }
         .comment-heading { font-weight: bold; color: white; margin-bottom: 8px; }
-        .comment-item { margin-bottom: 12px; }
+        .comment-item { margin-bottom: 8px; }
         .comment-user { color: #ff0000; font-weight: bold; }
-        .comment-reply { margin-left: 20px; margin-top: 5px; padding-left: 10px; border-left: 2px solid #ff0000; color: #ccc; font-size: 13px; }
         
         .video-list { margin-top: 20px; }
         .item { display: flex; align-items: center; gap: 15px; background: #181818; padding: 10px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; }
-        .item:hover { background: #222; }
         
-        .thumb { width: 120px; height: 70px; background: #222; flex-shrink: 0; position: relative; overflow: hidden; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+        .thumb { width: 120px; height: 70px; background: #333; flex-shrink: 0; position: relative; overflow: hidden; border-radius: 4px; }
         .thumb img { width: 100%; height: 100%; object-fit: cover; }
-        .small-play { position: absolute; background: rgba(0,0,0,0.5); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -60,83 +35,94 @@
 <div class="container">
     <h1>XTUBE33</h1>
     <div class="video-card">
-        <!-- মেইন ভিডিও প্লেয়ার -->
-        <div class="video-wrapper" id="main-player-box" onclick="openVideo()">
-            <img id="main-thumb" src="images/2_240.jpg" alt="Video">
-            <div class="big-play-btn">▶</div>
-            <div class="video-title-overlay" id="main-title">Hot Desi Bhabi Romance HD Video</div>
+        <div class="video-wrapper" id="player-container">
+            <!-- প্রথম ভিডিওটি ডিফল্ট হিসেবে লোড হবে -->
+            <iframe id="main-iframe" src="https://www.eporner.com/embed/obffjpOrXCf/?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            <div class="overlay" id="main-overlay">
+                <button class="btn-continue" onclick="resumeVideo()">Continue Watch</button>
+            </div>
         </div>
-
-        <div class="stats"><span>👍 4.5K</span> <span>💬 892</span> <span>👁️ 45K</span> <span>🔗 Share</span></div>
-        
+        <div class="stats"><span>👍 1.5K</span> <span>💬 442</span> <span>👁️ 15K</span> <span>🔗 Share</span></div>
         <div class="comment-section">
             <div class="comment-heading">Comments</div>
-            <div class="comment-item">
-                <span class="comment-user">Tanvir Hossain:</span> Bro, where can I find or watch these full videos? Please guide me.
-                <div class="comment-reply">
-                    <span class="comment-user">Admin:</span> Click on the play button, an ad will show up, then just click the back button to watch the full video directly.
-                </div>
-            </div>
-            <div class="comment-item">
-                <span class="comment-user">Rubel Ahmed:</span> This multi-position clip is absolute fire! Perfect stuff for late night.
-            </div>
-            <div class="comment-item">
-                <span class="comment-user">Mehedi Hasan:</span> Damn, her body shape is gorgeous. Need more uncut videos like this.
-            </div>
+            <div class="comment-item"><span class="comment-user">Sagor Ahmed:</span> Awesome video! Love the acting.</div>
+            <div class="comment-item"><span class="comment-user">Rafsan Jani:</span> The quality is amazing and super clear!</div>
+            <div class="comment-item"><span class="comment-user">Tania Sultana:</span> Love this content! Best channel ever.</div>
         </div>
     </div>
 
-    <h3>Trending Adult Videos</h3>
+    <h3>More Videos</h3>
     <div class="video-list" id="video-list"></div>
 </div>
 
 <script>
+    // আপনার দেওয়া ইপোর্নার ভিডিওগুলোর আইডি দিয়ে তালিকা তৈরি করা হলো
     const videos = [
-        {img: 'images/2_240.jpg', url: 'https://www.eporner.com/embed/obffjpOrXCf/', desc: 'Hot Desi Bhabi Romance HD Video'},
-        {img: 'images/2_240 (1).jpg', url: 'https://www.eporner.com/embed/FaZ196XxZwb/', desc: 'Secret Bedroom Hidden Cam Action'},
-        {img: 'images/7_240 (1).jpg', url: 'https://www.eporner.com/embed/JC2jw8obzCR/', desc: 'College Girl Hardcore Private Romance'},
-        {img: 'images/7_240.jpg', url: 'https://www.eporner.com/embed/wilPTKrNY51/', desc: 'Sensual Night Sex Video Uncensored'},
-        {img: 'images/8_240.jpg', url: 'https://www.eporner.com/embed/3KKSOYvGbue/', desc: 'Sexy Neighbour Full HD Viral MMS'},
-        {img: 'images/10_240.jpg', url: 'https://www.eporner.com/embed/3fOTTpnoffL/', desc: 'Desi Girlfriend Wild Night Pleasure'},
-        {img: 'images/11_240.jpg', url: 'https://www.eporner.com/embed/OP98Aaet3An/', desc: 'Romantic Bedroom Private Moments HD'},
-        {img: 'images/12_240.jpg', url: 'https://www.eporner.com/embed/inxw86iASET/', desc: 'Hot Sexy Model Close Up Action'},
-        {img: 'images/13_240 (1).jpg', url: 'https://www.eporner.com/embed/uSpndSAIEbO/', desc: 'Deep Night Romance Full Uncut Video'},
-        {img: 'images/13_240.jpg', url: 'https://www.eporner.com/embed/RRk6HACi7up/', desc: 'Naughty Housewife Secret Affair Clip'},
-        {img: 'images/15_240 (1).jpg', url: 'https://www.eporner.com/embed/LajuUIZsG3d/', desc: 'Desi Bhabi Hot Bedroom Masturbation'},
-        {img: 'images/15_240 (2).jpg', url: 'https://www.eporner.com/embed/mKqZBZmJnid/', desc: 'Extreme Pleasure Viral Adult Video'},
-        {img: 'images/15_240.jpg', url: 'https://www.eporner.com/embed/obffjpOrXCf/', desc: 'Exclusive Uncut Private Action Clip'}
+        {id: 'obffjpOrXCf', desc: 'High definition professional video content part one.'},
+        {id: 'FaZ196XxZwb', desc: 'Amazing scenes and clear quality entertainment.'},
+        {id: 'JC2jw8obzCR', desc: 'Exclusive vertical mobile format trending video.'},
+        {id: 'wilPTKrNY51', desc: 'Special featured clip with high engagement.'},
+        {id: '3KKSOYvGbue', desc: 'Popular mobile friendly video stream.'},
+        {id: '3fOTTpnoffL', desc: 'Cinematic experience with stunning resolution.'},
+        {id: 'OP98Aaet3An', desc: 'Classic trending footage for viewers.'},
+        {id: 'inxw86iASET', desc: 'Top rated full HD content collection.'},
+        {id: 'uSpndSAIEbO', desc: 'Special selected video for your audience.'},
+        {id: 'RRk6HACi7up', desc: 'Square format unique layout video stream.'},
+        {id: 'LajuUIZsG3d', desc: 'Smooth playback high quality production.'},
+        {id: 'mKqZBZmJnid', desc: 'Ultra 4K resolution top-tier featured video.'}
     ];
 
-    let currentVideo = videos[0];
+    const mainIframe = document.getElementById('main-iframe');
+    const overlay = document.getElementById('main-overlay');
+    let watchTimer;
 
-    const mainThumb = document.getElementById('main-thumb');
-    const mainTitle = document.getElementById('main-title');
-
-    function openVideo() {
-        window.open('https://progressmagnify.com/uxbc0jzq?key=7389f3aaab27e89319b6c474fc4bf2e0', '_blank');
-        window.location.href = currentVideo.url;
+    function startWatchTimer() {
+        clearTimeout(watchTimer);
+        watchTimer = setTimeout(() => {
+            if (!overlay.classList.contains('watched')) {
+                overlay.classList.add('active', 'watched');
+            }
+        }, 10000); // ১০ সেকেন্ড পর ওভারলে আসবে
     }
+
+    startWatchTimer();
+
+    function resumeVideo() {
+        overlay.classList.remove('active');
+        window.open('https://progressmagnify.com/uxbc0jzq?key=7389f3aaab27e89319b6c474fc4bf2e0', '_blank');
+        
+        // ব্যাক করে আসার পর বা বাটন ক্লিক করার পর ভিডিও রি-প্লে ট্রিগার করতে সোর্স রিফ্রেশ করা হলো
+        let currentSrc = mainIframe.src;
+        mainIframe.src = '';
+        setTimeout(() => {
+            mainIframe.src = currentSrc;
+        }, 100);
+    }
+
+    // ব্রাউজার হিস্ট্রি বা ব্যাক বাটন হ্যান্ডেল করার জন্য
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            let currentSrc = mainIframe.src;
+            mainIframe.src = '';
+            mainIframe.src = currentSrc;
+        }
+    });
 
     const list = document.getElementById('video-list');
     videos.forEach(v => {
         const div = document.createElement('div');
         div.className = 'item';
-        div.innerHTML = `
-            <div class="thumb">
-                <img src="${v.img}" alt="Thumb">
-                <div class="small-play">▶</div>
-            </div>
-            <div style="color:#ccc; font-size:14px;">${v.desc}</div>
-        `;
-        
+        // ইপোর্নারের থাম্বনেইল লিংক স্ট্রাকচার ব্যবহার করা হয়েছে
+        div.innerHTML = `<div class="thumb"><img src="https://static-eu-cdn.eporner.com/thumbs/static/${v.id}/337.jpg" onerror="this.src='https://via.placeholder.com/120x70/222/fff?text=Video'"></div><div style="color:#ccc; font-size:14px;">${v.desc}</div>`;
         div.onclick = () => { 
-            currentVideo = v;
-            mainThumb.src = v.img;
-            mainTitle.innerText = v.desc;
+            mainIframe.src = `https://www.eporner.com/embed/${v.id}/?autoplay=1`;
+            overlay.classList.remove('active', 'watched');
+            startWatchTimer();
             window.scrollTo(0, 0); 
         };
         list.appendChild(div);
     });
 </script>
+
 </body>
 </html>
