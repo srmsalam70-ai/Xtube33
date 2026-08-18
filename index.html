@@ -36,29 +36,28 @@
     <h1>XTUBE33</h1>
     <div class="video-card">
         <div class="video-wrapper" id="player-container">
-            <!-- প্রথম ভিডিও ডিফল্ট হিসেবে লোড হবে -->
-            <iframe id="main-iframe" src="https://www.eporner.com/embed/obffjpOrXCf/?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>
-            <div class="overlay" id="main-overlay">
-                <button class="btn-continue" onclick="resumeVideo()">Continue Watch</button>
+            <!-- প্রথমে ভিডিও সোর্স খালি থাকবে, প্লে বাটনে ক্লিক করলে লোড হবে -->
+            <iframe id="main-iframe" src=""></iframe>
+            <div class="overlay active" id="main-overlay">
+                <button class="btn-continue" id="action-btn" onclick="handleVideoAction()">Play Video</button>
             </div>
         </div>
-        <div class="stats"><span>👍 1.5K</span> <span>💬 442</span> <span>👁️ 15K</span> <span>🔗 Share</span></div>
+        <div class="stats"><span>👍 4.5K</span> <span>💬 892</span> <span>👁️ 45K</span> <span>🔗 Share</span></div>
         <div class="comment-section">
             <div class="comment-heading">Comments</div>
-            <div class="comment-item"><span class="comment-user">Sagor Ahmed:</span> Awesome video! Love the acting.</div>
-            <div class="comment-item"><span class="comment-user">Rafsan Jani:</span> The quality is amazing and super clear!</div>
-            <div class="comment-item"><span class="comment-user">Tania Sultana:</span> Love this content! Best channel ever.</div>
+            <div class="comment-item"><span class="comment-user">Tanvir Hossain:</span> Bro, where can I find or watch these full videos? Please guide me.</div>
+            <div class="comment-item"><span class="comment-user">Rubel Ahmed:</span> This multi-position clip is absolute fire! Perfect stuff for late night.</div>
+            <div class="comment-item"><span class="comment-user">Mehedi Hasan:</span> Damn, her body shape is gorgeous. Need more uncut videos like this.</div>
         </div>
     </div>
 
-    <h3>More Videos</h3>
+    <h3>Trending Adult Videos</h3>
     <div class="video-list" id="video-list"></div>
 </div>
 
 <script>
-    // ইপোর্নার ভিডিওগুলোর তালিকা
     const videos = [
-        {id: 'obffjpOrXCf', desc: 'High definition professional video content part one.'},
+        {id: 'obffjpOrXCf', desc: 'Hot Desi Bhabi Romance HD Video'},
         {id: 'FaZ196XxZwb', desc: 'Amazing scenes and clear quality entertainment.'},
         {id: 'JC2jw8obzCR', desc: 'Exclusive vertical mobile format trending video.'},
         {id: 'wilPTKrNY51', desc: 'Special featured clip with high engagement.'},
@@ -72,40 +71,49 @@
         {id: 'mKqZBZmJnid', desc: 'Ultra 4K resolution top-tier featured video.'}
     ];
 
+    let currentVideoId = 'obffjpOrXCf';
     const mainIframe = document.getElementById('main-iframe');
     const overlay = document.getElementById('main-overlay');
+    const actionBtn = document.getElementById('action-btn');
+    let isPlaying = false;
     let watchTimer;
+
+    function handleVideoAction() {
+        if (!isPlaying) {
+            // ১. প্রথমবার প্লে বাটনে ক্লিক করলে ভিডিও চালু হবে
+            isPlaying = true;
+            mainIframe.src = `https://www.eporner.com/embed/${currentVideoId}/?autoplay=1`;
+            overlay.classList.remove('active');
+            
+            // ১০ সেকেন্ড কাউন্টডাউন শুরু হবে
+            startWatchTimer();
+        } else {
+            // ২. ১০ সেকেন্ড পর Continue বাটনে ক্লিক করলে অ্যাড শো করবে
+            window.open('https://progressmagnify.com/uxbc0jzq?key=7389f3aaab27e89319b6c474fc4bf2e0', '_blank');
+            overlay.classList.remove('active');
+            
+            // ভিডিও রিফ্রেশ বা সচল রাখা
+            let currentSrc = mainIframe.src;
+            mainIframe.src = '';
+            setTimeout(() => {
+                mainIframe.src = currentSrc;
+            }, 100);
+            
+            startWatchTimer(); // পরবর্তী সময়ের জন্য আবার টাইমার চালু রাখা
+        }
+    }
 
     function startWatchTimer() {
         clearTimeout(watchTimer);
         watchTimer = setTimeout(() => {
-            if (!overlay.classList.contains('watched')) {
-                overlay.classList.add('active', 'watched');
-            }
-        }, 10000); // ১০ সেকেন্ড পর ওভারলে আসবে
+            actionBtn.innerText = "Continue Watch";
+            overlay.classList.add('active');
+        }, 10000); // ঠিক ১০ সেকেন্ড পর Continue বাটন আসবে
     }
 
-    startWatchTimer();
-
-    function resumeVideo() {
-        overlay.classList.remove('active');
-        
-        // নিরাপদভাবে নতুন ট্যাবে এড ওপেন করার কোড
-        var win = window.open('https://progressmagnify.com/uxbc0jzq?key=7389f3aaab27e89319b6c474fc4bf2e0', '_blank');
-        if (win) {
-            win.focus();
-        }
-
-        // টাইমআউট এরর এড়াতে আইফ্রেমের স্টেট ঠিক রাখা
-        let currentUrl = mainIframe.src;
-        if(!currentUrl.includes('autoplay=1')) {
-            mainIframe.src = currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'autoplay=1';
-        }
-    }
-
-    // ব্রাউজার হিস্ট্রি বা ব্যাক বাটন হ্যান্ডেল করার জন্য
+    // ব্যাক বাটন বা পেজে ফিরে আসলে ভিডিও ঠিক রাখার জন্য
     window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
+        if (event.persisted && isPlaying) {
             let currentSrc = mainIframe.src;
             mainIframe.src = '';
             setTimeout(() => {
@@ -120,8 +128,10 @@
         div.className = 'item';
         div.innerHTML = `<div class="thumb"><img src="https://static-eu-cdn.eporner.com/thumbs/static/${v.id}/337.jpg" onerror="this.src='https://via.placeholder.com/120x70/222/fff?text=Video'"></div><div style="color:#ccc; font-size:14px;">${v.desc}</div>`;
         div.onclick = () => { 
+            currentVideoId = v.id;
+            isPlaying = true;
             mainIframe.src = `https://www.eporner.com/embed/${v.id}/?autoplay=1`;
-            overlay.classList.remove('active', 'watched');
+            overlay.classList.remove('active');
             startWatchTimer();
             window.scrollTo(0, 0); 
         };
